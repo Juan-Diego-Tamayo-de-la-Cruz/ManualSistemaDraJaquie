@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Usuario — Sistema de Gestión de Consultorio</title>
+<style>
+  /* ── Reset & Base ─────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose-50:  #fff1f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecdd3;
+    --rose-300: #fda4af;
+    --rose-400: #fb7185;
+    --rose-500: #f43f5e;
+    --rose-600: #e11d48;
+    --rose-700: #be123c;
+    --slate-50:  #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    --emerald:   #10b981;
+    --amber:     #f59e0b;
+    --violet:    #8b5cf6;
+    --sky:       #0ea5e9;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #fff5f7;
+    color: var(--slate-700);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── Sidebar ──────────────────────────────────────── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 270px;
+    height: 100vh;
+    background: white;
+    border-right: 1px solid var(--rose-100);
+    overflow-y: auto;
+    z-index: 100;
+    padding-bottom: 2rem;
+    box-shadow: 4px 0 20px rgba(244,63,94,.07);
+  }
+
+  .sidebar-header {
+    background: linear-gradient(135deg, var(--rose-500), #ec4899);
+    color: white;
+    padding: 1.5rem 1.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .sidebar-header h2 { font-size: 13px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; opacity: .85; margin-bottom: 4px; }
+  .sidebar-header p  { font-size: 11px; opacity: .7; }
+
+  .toc { padding: .75rem 0; }
+  .toc-section { padding: .5rem 1.25rem .25rem; font-size: 9px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: var(--rose-300); }
+
+  .toc a {
+    display: block;
+    padding: .45rem 1.25rem .45rem 1.5rem;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--slate-500);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .toc a:hover { color: var(--rose-500); background: var(--rose-50); border-left-color: var(--rose-300); }
+  .toc a.active { color: var(--rose-600); background: var(--rose-50); border-left-color: var(--rose-500); font-weight: 700; }
+  .toc a.sub { padding-left: 2.25rem; font-size: 12px; font-weight: 500; }
+  .toc a.admin-only { color: var(--violet); }
+  .toc a.admin-only:hover { background: #f5f3ff; border-left-color: var(--violet); }
+
+  /* ── Main Content ─────────────────────────────────── */
+  #main {
+    margin-left: 270px;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .hero {
+    background: linear-gradient(135deg, var(--rose-500) 0%, #ec4899 50%, #a855f7 100%);
+    color: white;
+    padding: 5rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-tag { display: inline-block; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3); padding: .3rem .9rem; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .hero h1 { font-size: 2.8rem; font-weight: 900; line-height: 1.15; margin-bottom: 1rem; position: relative; }
+  .hero p  { font-size: 1.05rem; opacity: .85; max-width: 600px; position: relative; }
+  .hero-meta { display: flex; gap: 2rem; margin-top: 2.5rem; position: relative; }
+  .hero-meta-item { text-align: center; }
+  .hero-meta-item span { display: block; font-size: 1.6rem; font-weight: 900; }
+  .hero-meta-item small { font-size: 11px; opacity: .7; text-transform: uppercase; letter-spacing: .08em; }
+
+  /* ── Sections ─────────────────────────────────────── */
+  .section {
+    padding: 3.5rem 4rem;
+    border-bottom: 1px solid var(--rose-100);
+  }
+  .section:last-child { border-bottom: none; }
+  .section-alt { background: white; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .section-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .icon-rose    { background: var(--rose-100);   color: var(--rose-500); }
+  .icon-emerald { background: #d1fae5; color: var(--emerald); }
+  .icon-violet  { background: #ede9fe; color: var(--violet); }
+  .icon-amber   { background: #fef3c7; color: var(--amber); }
+  .icon-sky     { background: #e0f2fe; color: var(--sky); }
+  .icon-slate   { background: var(--slate-100); color: var(--slate-500); }
+
+  .section-title { font-size: 1.6rem; font-weight: 900; color: var(--slate-900); line-height: 1.2; }
+  .section-sub   { font-size: .85rem; color: var(--slate-400); font-weight: 600; margin-top: .25rem; }
+
+  h2.chapter {
+    font-size: 1.1rem; font-weight: 900; color: var(--rose-500);
+    text-transform: uppercase; letter-spacing: .15em;
+    padding: .4rem 0; border-bottom: 2px solid var(--rose-100);
+    margin-bottom: 1.75rem;
+  }
+
+  /* ── Role badges ──────────────────────────────────── */
+  .role-badges { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    padding: .3rem .75rem; border-radius: 999px;
+    font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+  }
+  .badge-admin    { background: #ede9fe; color: var(--violet); }
+  .badge-asistente{ background: var(--rose-100); color: var(--rose-600); }
+  .badge-todos    { background: var(--slate-100); color: var(--slate-600); }
+  .badge-new      { background: #d1fae5; color: #065f46; }
+
+  /* ── Screenshot placeholder ───────────────────────── */
+  .screenshot {
+    border: 2.5px dashed var(--rose-200);
+    border-radius: 16px;
+    background: var(--rose-50);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    color: var(--rose-300);
+    margin: 1.5rem 0;
+    padding: 2rem;
+    text-align: center;
+    transition: border-color .2s, background .2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .screenshot:hover { border-color: var(--rose-300); background: #fff1f2; }
+  .screenshot-icon { font-size: 2.5rem; }
+  .screenshot-label { font-size: 13px; font-weight: 700; color: var(--rose-400); }
+  .screenshot-hint  { font-size: 11px; color: var(--rose-300); }
+  .screenshot-tag {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--rose-200); color: var(--rose-600);
+    font-size: 10px; font-weight: 800; padding: .2rem .6rem; border-radius: 999px;
+    text-transform: uppercase; letter-spacing: .08em;
+  }
+
+  .screenshot-sm { min-height: 180px; }
+  .screenshot-lg { min-height: 380px; }
+
+  .screenshots-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  /* ── Screenshot image & placeholder ─────────────── */
+  .sc-img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    object-fit: contain;
+    max-height: 420px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+  }
+  .sc-ph {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+    width: 100%;
+  }
+
+  /* ── Steps ────────────────────────────────────────── */
+  .steps { list-style: none; margin: 1.5rem 0; }
+  .steps li {
+    display: flex;
+    gap: 1rem;
+    padding: .9rem 0;
+    border-bottom: 1px solid var(--slate-100);
+  }
+  .steps li:last-child { border-bottom: none; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose-500), #ec4899);
+    color: white; font-size: 12px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .step-content strong { display: block; font-size: 14px; color: var(--slate-800); margin-bottom: .2rem; }
+  .step-content p { font-size: 13.5px; color: var(--slate-500); margin: 0; }
+
+  /* ── Info / Warning / Tip boxes ──────────────────── */
+  .callout {
+    border-radius: 14px;
+    padding: 1.1rem 1.4rem;
+    margin: 1.25rem 0;
+    display: flex;
+    gap: .85rem;
+    align-items: flex-start;
+    font-size: 13.5px;
+  }
+  .callout-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+  .callout-text strong { display: block; font-weight: 800; margin-bottom: .2rem; }
+  .callout-info    { background: #e0f2fe; border-left: 4px solid var(--sky); }
+  .callout-info .callout-text strong { color: #0369a1; }
+  .callout-info .callout-text { color: #0c4a6e; }
+  .callout-warn    { background: #fef3c7; border-left: 4px solid var(--amber); }
+  .callout-warn .callout-text strong { color: #92400e; }
+  .callout-warn .callout-text { color: #78350f; }
+  .callout-success { background: #d1fae5; border-left: 4px solid var(--emerald); }
+  .callout-success .callout-text strong { color: #065f46; }
+  .callout-success .callout-text { color: #064e3b; }
+  .callout-danger  { background: var(--rose-50); border-left: 4px solid var(--rose-500); }
+  .callout-danger .callout-text strong { color: var(--rose-700); }
+  .callout-danger .callout-text { color: var(--rose-600); }
+
+  /* ── Table ────────────────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 13.5px; }
+  thead tr { background: var(--rose-50); }
+  th { padding: .7rem 1rem; text-align: left; font-size: 10.5px; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: var(--rose-400); border-bottom: 2px solid var(--rose-100); }
+  td { padding: .7rem 1rem; border-bottom: 1px solid var(--slate-100); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--rose-50); }
+
+  /* ── Field list ───────────────────────────────────── */
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin: 1rem 0; }
+  .field {
+    background: white;
+    border: 1px solid var(--rose-100);
+    border-radius: 10px;
+    padding: .75rem 1rem;
+  }
+  .field-name  { font-size: 12px; font-weight: 800; color: var(--rose-500); margin-bottom: .1rem; }
+  .field-desc  { font-size: 12.5px; color: var(--slate-500); }
+  .field-req   { display: inline-block; font-size: 9px; font-weight: 900; color: white; background: var(--rose-400); border-radius: 999px; padding: .1rem .4rem; margin-left: .4rem; vertical-align: middle; }
+  .field-opt   { display: inline-block; font-size: 9px; font-weight: 900; color: var(--slate-400); background: var(--slate-100); border-radius: 999px; padding: .1rem .4rem; margin-left: .4rem; vertical-align: middle; }
+
+  /* ── Misc ─────────────────────────────────────────── */
+  p { margin-bottom: .9rem; }
+  p:last-child { margin-bottom: 0; }
+  ul, ol { margin: .75rem 0 .75rem 1.5rem; }
+  ul li, ol li { margin-bottom: .4rem; font-size: 14px; }
+  strong { color: var(--slate-800); }
+  code { background: var(--rose-50); color: var(--rose-600); border: 1px solid var(--rose-100); padding: .1em .4em; border-radius: 5px; font-family: monospace; font-size: .88em; }
+  hr { border: none; border-top: 2px solid var(--rose-100); margin: 2rem 0; }
+  .divider { height: 4px; background: linear-gradient(90deg, var(--rose-500), #ec4899, transparent); border-radius: 999px; margin: 2rem 0; }
+  .text-muted { color: var(--slate-400); font-size: 13px; }
+  .text-rose { color: var(--rose-500); }
+  .mt-2 { margin-top: 1.5rem; }
+  .chip {
+    display: inline-flex; align-items: center; gap: .3rem;
+    background: var(--rose-50); border: 1px solid var(--rose-200);
+    color: var(--rose-600); padding: .2rem .7rem; border-radius: 999px;
+    font-size: 12px; font-weight: 700; margin: .2rem;
+  }
+
+  /* ── Print ────────────────────────────────────────── */
+  @media print {
+    #sidebar { display: none; }
+    #main { margin-left: 0; }
+    .section { page-break-inside: avoid; }
+    .screenshot { border-color: #ccc; }
+  }
+
+  @media (max-width: 900px) {
+    #sidebar { display: none; }
+    #main { margin-left: 0; }
+    .hero { padding: 3rem 2rem; }
+    .section { padding: 2.5rem 2rem; }
+    .hero h1 { font-size: 2rem; }
+    .fields, .screenshots-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-header">
+    <h2>Manual de Usuario</h2>
+    <p>Sistema de Gestión de Consultorio</p>
+  </div>
+  <div class="toc">
+    <div class="toc-section">Introducción</div>
+    <a href="#presentacion">Presentación</a>
+    <a href="#problema">Problema que resuelve</a>
+    <a href="#objetivos">Objetivos del sistema</a>
+    <a href="#alcance">Alcance</a>
+    <a href="#requerimientos">Requerimientos técnicos</a>
+    <a href="#inicio">¿Qué es el sistema?</a>
+    <a href="#roles">Roles de usuario</a>
+    <a href="#acceso">Cómo acceder</a>
+
+    <div class="toc-section">Módulos generales</div>
+    <a href="#dashboard">Dashboard</a>
+    <a href="#pacientes">Pacientes</a>
+    <a href="#tratamientos">Tratamientos</a>
+    <a href="#historial">Historial clínico</a>
+    <a href="#agenda">Agenda</a>
+
+    <div class="toc-section">Inventario</div>
+    <a href="#productos">Productos</a>
+    <a href="#lotes">Lotes</a>
+    <a href="#alertas">Alertas</a>
+
+    <div class="toc-section">Ventas</div>
+    <a href="#pos">Punto de Venta</a>
+    <a href="#ventas">Historial de ventas</a>
+
+    <div class="toc-section">Administración</div>
+    <a href="#usuarios" class="admin-only">👑 Usuarios</a>
+    <a href="#proveedores" class="admin-only">👑 Proveedores</a>
+    <a href="#auditoria" class="admin-only">👑 Auditoría</a>
+    <a href="#configuracion" class="admin-only">👑 Configuración</a>
+
+    <div class="toc-section">Mi cuenta</div>
+    <a href="#perfil">Mi Perfil</a>
+    <a href="#password">Cambiar contraseña</a>
+  </div>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main id="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">📋 Manual de usuario — v1.0</div>
+    <h1>Sistema de Gestión<br>de Consultorio</h1>
+    <p>Guía completa de uso para <strong>Administradores</strong> y <strong>Asistentes</strong>. Este manual cubre todos los módulos del sistema, con instrucciones paso a paso para cada función disponible.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><span>13</span><small>Módulos</small></div>
+      <div class="hero-meta-item"><span>2</span><small>Roles</small></div>
+      <div class="hero-meta-item"><span>100%</span><small>Cobertura</small></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  INTRODUCCIÓN                              -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PRESENTACIÓN                              -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="presentacion">
+    <div class="section-header">
+      <div class="section-icon icon-rose">💼</div>
+      <div>
+        <div class="section-title">Presentación del sistema</div>
+        <div class="section-sub">Descripción general y contexto</div>
+      </div>
+    </div>
+
+    <p>El <strong>Sistema de Gestión de Consultorio</strong> es una aplicación web desarrollada a medida para cubrir las necesidades operativas y administrativas de un <strong>consultorio de medicina estética</strong>. Integra en una sola plataforma todos los procesos clave del negocio: desde el control de inventario de insumos médicos hasta la atención al paciente, la programación de citas, el registro de tratamientos y la gestión de ventas.</p>
+
+    <p>La plataforma fue construida con tecnología moderna orientada a la web, lo que significa que <strong>no requiere instalación</strong> en cada computadora: basta con un navegador actualizado y acceso a la red donde esté alojado el sistema. Esto facilita su uso tanto en consultorios con un solo equipo como en clínicas con múltiples estaciones de trabajo y personal.</p>
+
+    <div class="divider"></div>
+
+    <h3 style="color:var(--slate-700);margin-bottom:1rem;font-size:1rem;">¿A quién va dirigido?</h3>
+
+    <div class="fields" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="field">
+        <div class="field-name">🩺 Médicos estéticos</div>
+        <div class="field-desc">Llevar el control clínico de sus pacientes y el historial de tratamientos realizados, con trazabilidad completa de los insumos utilizados en cada sesión.</div>
+      </div>
+      <div class="field">
+        <div class="field-name">🗂️ Administradores</div>
+        <div class="field-desc">Supervisar el inventario, gestionar al personal, consultar reportes de ventas y mantener el control financiero y operativo del consultorio.</div>
+      </div>
+      <div class="field">
+        <div class="field-name">🧑‍⚕️ Asistentes de clínica</div>
+        <div class="field-desc">Registrar tratamientos, atender el punto de venta, gestionar la agenda de citas y apoyar en el control del inventario del día a día.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info" style="margin-top:1.5rem;">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-text">
+        <strong>Sistema web, acceso desde cualquier dispositivo</strong>
+        Al estar basado en tecnología web, el sistema puede usarse desde computadoras de escritorio, laptops, tablets e incluso teléfonos inteligentes, sin instalar nada adicional. Solo necesitas un navegador web moderno y la dirección del sistema.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PROBLEMA QUE RESUELVE                     -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="problema">
+    <div class="section-header">
+      <div class="section-icon icon-rose">🎯</div>
+      <div>
+        <div class="section-title">Problema que resuelve</div>
+        <div class="section-sub">La situación antes del sistema y cómo cambia</div>
+      </div>
+    </div>
+
+    <p>Los consultorios de medicina estética manejan una gran variedad de insumos costosos (toxinas, rellenos dérmicos, anestésicos, equipos de aplicación) con fechas de caducidad estrictas, proveedores específicos y necesidad de trazabilidad por paciente. Sin un sistema centralizado, esta operación depende de hojas de cálculo, cuadernos o la memoria del personal, lo que genera múltiples problemas:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;">
+
+      <div style="background:var(--rose-50);border:1px solid var(--rose-200);border-radius:16px;padding:1.25rem;">
+        <p style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-400);margin-bottom:.75rem;">❌ Sin el sistema</p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;">
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Lotes vencidos que nadie detectó a tiempo, generando pérdidas económicas.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Inventario desactualizado: se descubren faltantes cuando el producto ya se necesita.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Sin historial clínico organizado: no se sabe qué tratamientos se aplicaron ni qué insumos se usaron.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Citas anotadas en agendas de papel, con riesgo de olvidos y doble reservación.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Ventas registradas en notas sueltas, sin posibilidad de rastrear ingresos del día o del mes.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> Imposible saber qué empleado hizo qué, ni cuándo, ni cómo.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;">✗</span> La información vive en la cabeza de una sola persona; si falta ese empleado, todo se detiene.</li>
+        </ul>
+      </div>
+
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:16px;padding:1.25rem;">
+        <p style="font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin-bottom:.75rem;">✅ Con el sistema</p>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6rem;">
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Alertas automáticas de caducidad y stock bajo antes de que sea un problema.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> El inventario se descuenta solo al aplicar un tratamiento o registrar una venta.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Historial clínico completo por paciente, con fechas, insumos y notas de cada sesión.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Agenda digital con vista mensual, citas por color y cobro integrado desde la misma pantalla.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Punto de venta con historial de ventas, totales del día y del mes en tiempo real.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Auditoría completa: cada acción queda registrada con usuario, fecha y hora.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;">✓</span> Información centralizada, accesible para todo el equipo autorizado en tiempo real.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>Resultado principal</strong>
+        El sistema transforma la operación del consultorio de un modelo reactivo (me enteré del problema cuando ya ocurrió) a uno preventivo y trazable: siempre sabes qué tienes, qué se gastó, quién lo usó y cuándo.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  OBJETIVOS                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="objetivos">
+    <div class="section-header">
+      <div class="section-icon icon-emerald">🎯</div>
+      <div>
+        <div class="section-title">Objetivos del sistema</div>
+        <div class="section-sub">General y específicos</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);font-size:1rem;margin-bottom:.75rem;">Objetivo general</h3>
+    <p>Proporcionar al consultorio de medicina estética una plataforma digital integral que centralice, automatice y optimice sus procesos operativos y administrativos, mejorando la eficiencia del personal, reduciendo pérdidas por descontrol de inventario y garantizando la trazabilidad completa de cada tratamiento, venta y movimiento de insumos.</p>
+
+    <div class="divider"></div>
+
+    <h3 style="color:var(--slate-700);font-size:1rem;margin-bottom:1rem;">Objetivos específicos</h3>
+
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">📦</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Control de inventario en tiempo real</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Mantener un registro exacto y actualizado de todos los productos e insumos del consultorio, por lote y fecha de caducidad, con descuento automático al consumirlos.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">⚠️</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Prevención de pérdidas por caducidad y stock bajo</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Generar alertas automáticas cuando algún producto esté próximo a vencer o su cantidad caiga por debajo del mínimo configurado.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">👤</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Gestión del historial clínico de pacientes</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Registrar y consultar el historial completo de cada paciente: tratamientos realizados, fechas, insumos usados y observaciones clínicas.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">📅</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Organización de la agenda de citas</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Programar, visualizar y gestionar citas desde un calendario digital con capacidad de cobrar directamente desde la cita.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">🛒</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Registro y control de ventas</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Facilitar la venta de productos al público con cálculo automático de totales, IVA, cambio y registro del método de pago.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">🔍</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Trazabilidad y auditoría de operaciones</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Garantizar que cada acción relevante (venta, tratamiento, movimiento de inventario, acceso al sistema) quede registrada con usuario, fecha y hora.</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem 1.25rem;">
+        <span style="font-size:1.2rem;flex-shrink:0;">👥</span>
+        <div>
+          <strong style="color:var(--slate-800);font-size:14px;">Control de acceso por roles</strong>
+          <p style="margin:0;font-size:13.5px;color:var(--slate-500);">Diferenciar los permisos entre administradores y asistentes para proteger la información sensible y delimitar las responsabilidades de cada usuario.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  ALCANCE                                   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="alcance">
+    <div class="section-header">
+      <div class="section-icon icon-sky">📐</div>
+      <div>
+        <div class="section-title">Alcance del sistema</div>
+        <div class="section-sub">Qué cubre y qué no cubre</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+      <div>
+        <h3 style="color:var(--emerald);font-size:.95rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;">
+          <span style="width:20px;height:20px;background:#d1fae5;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">✓</span>
+          Lo que el sistema SÍ incluye
+        </h3>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;">
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Catálogo completo de productos con tipos, marcas y presentaciones.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Control de lotes con número de lote, fecha de caducidad y ubicación.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Alertas automáticas de stock bajo y caducidad próxima.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Registro de pacientes con historial clínico y notas.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Protocolos de tratamientos con lista de insumos por sesión.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Aplicación de tratamientos con descuento automático FEFO de inventario.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Agenda con vista de calendario mensual y programación de citas.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Cobro de citas con productos adicionales, IVA y cambio en efectivo.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Punto de venta para venta directa de productos al público.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Historial completo de ventas con opción de anulación.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Gestión de proveedores con información de contacto.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Importación masiva de productos desde archivo Excel.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Auditoría completa de todas las acciones del sistema.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Dos roles de usuario con permisos diferenciados.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Dashboard con indicadores y accesos rápidos.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--emerald);font-weight:900;flex-shrink:0;">✓</span> Personalización del logo del consultorio.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3 style="color:var(--rose-500);font-size:.95rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;">
+          <span style="width:20px;height:20px;background:var(--rose-100);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">✗</span>
+          Lo que el sistema NO incluye (versión actual)
+        </h3>
+        <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:.5rem;">
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Generación automática de facturas fiscales (CFDI/SAT).</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Impresión de tickets de venta o recibos físicos.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Módulo de contabilidad o integración con sistemas contables.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Cobro con terminal bancaria integrada (TPV física).</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Notificaciones automáticas por correo o SMS a pacientes.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Gestión de comisiones por asistente o esquemas de nómina.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Expediente clínico con fotografías antes/después del tratamiento.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> Múltiples sucursales o ubicaciones en la misma instalación.</li>
+          <li style="font-size:13.5px;color:var(--slate-600);display:flex;gap:.5rem;"><span style="color:var(--rose-400);font-weight:900;flex-shrink:0;">✗</span> App móvil nativa (iOS / Android).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🔮</span>
+      <div class="callout-text">
+        <strong>Expansión futura</strong>
+        Las funcionalidades listadas como "no incluidas" representan posibles mejoras para versiones futuras del sistema. El diseño modular de la plataforma facilita agregar nuevos módulos sin afectar los existentes.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  REQUERIMIENTOS TÉCNICOS                   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="requerimientos">
+    <div class="section-header">
+      <div class="section-icon icon-slate">💻</div>
+      <div>
+        <div class="section-title">Requerimientos técnicos</div>
+        <div class="section-sub">Requisitos de hardware, software y conectividad</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+      <!-- Cliente (usuario final) -->
+      <div style="background:white;border:1px solid var(--rose-100);border-radius:18px;overflow:hidden;">
+        <div style="background:var(--rose-50);padding:1rem 1.25rem;border-bottom:1px solid var(--rose-100);">
+          <p style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:var(--rose-400);margin:0;">Para el usuario final</p>
+          <p style="font-size:.95rem;font-weight:800;color:var(--slate-800);margin:.2rem 0 0;">Computadora / Tablet / Celular</p>
+        </div>
+        <div style="padding:1.25rem;">
+          <table style="margin:0;">
+            <tbody>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border:none;width:40%;">Dispositivo</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border:none;">PC, laptop, tablet o smartphone</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-bottom:1px solid var(--slate-100);border-top:1px solid var(--slate-100);">Navegador</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-bottom:1px solid var(--slate-100);border-top:1px solid var(--slate-100);">Chrome 90+, Firefox 88+, Edge 90+, Safari 14+</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border:none;">Conexión</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border:none;">Red local (LAN/WiFi) o Internet si el servidor está en la nube</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Resolución</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">Mínimo 1024×768 px. Recomendado: 1280×800 px o más</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Sin instalación</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">No se instala nada. Solo acceso al navegador web.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Servidor -->
+      <div style="background:white;border:1px solid var(--rose-100);border-radius:18px;overflow:hidden;">
+        <div style="background:#ede9fe;padding:1rem 1.25rem;border-bottom:1px solid #ddd6fe;">
+          <p style="font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.12em;color:var(--violet);margin:0;">Para el servidor (instalación)</p>
+          <p style="font-size:.95rem;font-weight:800;color:var(--slate-800);margin:.2rem 0 0;">VPS / Servidor local</p>
+        </div>
+        <div style="padding:1.25rem;">
+          <table style="margin:0;">
+            <tbody>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border:none;width:40%;">CPU</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border:none;">Mínimo 1 vCPU. Recomendado: 2 vCPU</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">RAM</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">Mínimo 1 GB. Recomendado: 2 GB</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Disco</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">Mínimo 10 GB disponibles</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Sistema operativo</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">Ubuntu 22.04 / Debian 12 (recomendado)</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Software</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">Docker Engine + Docker Compose (se instalan con un comando)</td></tr>
+              <tr><td style="font-size:12px;font-weight:700;color:var(--slate-500);padding:.5rem .5rem .5rem 0;border-top:1px solid var(--slate-100);">Puertos requeridos</td><td style="font-size:13px;color:var(--slate-700);padding:.5rem 0;border-top:1px solid var(--slate-100);">3085 (frontend) y 8071 (backend) abiertos en el firewall</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stack tecnológico -->
+    <h3 style="color:var(--slate-700);font-size:1rem;margin-bottom:1rem;">Tecnologías utilizadas</h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;">
+      <div style="text-align:center;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem .75rem;">
+        <div style="font-size:1.6rem;margin-bottom:.4rem;">⚛️</div>
+        <div style="font-size:12px;font-weight:800;color:var(--slate-700);">React 18</div>
+        <div style="font-size:11px;color:var(--slate-400);">Interfaz de usuario</div>
+      </div>
+      <div style="text-align:center;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem .75rem;">
+        <div style="font-size:1.6rem;margin-bottom:.4rem;">🐍</div>
+        <div style="font-size:12px;font-weight:800;color:var(--slate-700);">FastAPI</div>
+        <div style="font-size:11px;color:var(--slate-400);">Backend / API</div>
+      </div>
+      <div style="text-align:center;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem .75rem;">
+        <div style="font-size:1.6rem;margin-bottom:.4rem;">🐘</div>
+        <div style="font-size:12px;font-weight:800;color:var(--slate-700);">PostgreSQL</div>
+        <div style="font-size:11px;color:var(--slate-400);">Base de datos</div>
+      </div>
+      <div style="text-align:center;background:white;border:1px solid var(--rose-100);border-radius:12px;padding:1rem .75rem;">
+        <div style="font-size:1.6rem;margin-bottom:.4rem;">🐳</div>
+        <div style="font-size:12px;font-weight:800;color:var(--slate-700);">Docker</div>
+        <div style="font-size:11px;color:var(--slate-400);">Despliegue</div>
+      </div>
+    </div>
+
+    <div class="callout callout-success" style="margin-top:1.5rem;">
+      <span class="callout-icon">🔒</span>
+      <div class="callout-text">
+        <strong>Seguridad del sistema</strong>
+        El acceso está protegido con tokens JWT con expiración automática. Las contraseñas se almacenan cifradas con bcrypt. La base de datos no es accesible desde el exterior (solo dentro de la red Docker interna). Todas las acciones quedan registradas en la auditoría.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  QUÉ ES EL SISTEMA (DESCRIPCIÓN MÓDULOS)   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="inicio">
+    <div class="section-header">
+      <div class="section-icon icon-rose">🏥</div>
+      <div>
+        <div class="section-title">Módulos del sistema</div>
+        <div class="section-sub">Resumen de las funcionalidades principales</div>
+      </div>
+    </div>
+
+    <p>El <strong>Sistema de Gestión de Consultorio</strong> es una plataforma web diseñada para facilitar la administración integral de un consultorio de medicina estética. Permite controlar el inventario de productos, gestionar pacientes y sus tratamientos, programar citas, registrar ventas y mantener un historial completo de todas las operaciones.</p>
+
+    <p>El sistema corre directamente en tu navegador web (Chrome, Firefox, Edge) sin necesidad de instalar ningún programa adicional. Solo necesitas la dirección del sistema y tus credenciales de acceso.</p>
+
+    <div class="divider"></div>
+
+    <h3 style="color:var(--slate-700);margin-bottom:1rem;font-size:1rem;">Funcionalidades principales</h3>
+    <div class="fields" style="grid-template-columns:1fr 1fr 1fr;">
+      <div class="field"><div class="field-name">📦 Inventario</div><div class="field-desc">Control de productos, lotes y fechas de caducidad con alertas automáticas.</div></div>
+      <div class="field"><div class="field-name">👤 Pacientes</div><div class="field-desc">Base de datos de pacientes con historial clínico completo.</div></div>
+      <div class="field"><div class="field-name">💉 Tratamientos</div><div class="field-desc">Protocolos de tratamientos con descuento automático de inventario.</div></div>
+      <div class="field"><div class="field-name">📅 Agenda</div><div class="field-desc">Calendario mensual para programar y gestionar citas.</div></div>
+      <div class="field"><div class="field-name">🛒 Punto de Venta</div><div class="field-desc">Venta de productos con cálculo de cambio y opción de IVA.</div></div>
+      <div class="field"><div class="field-name">🔒 Auditoría</div><div class="field-desc">Registro completo de todas las acciones realizadas en el sistema.</div></div>
+    </div>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 1</div>
+      <img src="capturas/captura1.JPEG" alt="Vista general del sistema — Pantalla de inicio (Dashboard)" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Vista general del sistema — Pantalla de inicio (Dashboard)</div>
+        <div class="screenshot-hint">Insertar captura de pantalla completa del dashboard</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ROLES ══ -->
+  <section class="section" id="roles">
+    <div class="section-header">
+      <div class="section-icon icon-violet">👥</div>
+      <div>
+        <div class="section-title">Roles de usuario</div>
+        <div class="section-sub">Permisos y accesos según el tipo de cuenta</div>
+      </div>
+    </div>
+
+    <p>El sistema cuenta con dos tipos de usuarios, cada uno con diferentes niveles de acceso:</p>
+
+    <table>
+      <thead>
+        <tr><th>Módulo</th><th>Administrador</th><th>Asistente</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Dashboard</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Pacientes</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Tratamientos</strong></td><td>✅ Crear, editar, aplicar</td><td>✅ Aplicar (solo)</td></tr>
+        <tr><td><strong>Historial clínico</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Agenda</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Inventario (Productos)</strong></td><td>✅ Crear, editar, importar</td><td>✅ Consultar</td></tr>
+        <tr><td><strong>Inventario (Lotes)</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Alertas</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Punto de Venta</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+        <tr><td><strong>Historial de ventas</strong></td><td>✅ Ver + Anular</td><td>✅ Solo ver</td></tr>
+        <tr><td><strong>Usuarios</strong></td><td>✅ Crear, editar, desactivar</td><td>❌ Sin acceso</td></tr>
+        <tr><td><strong>Proveedores</strong></td><td>✅ Completo</td><td>❌ Sin acceso</td></tr>
+        <tr><td><strong>Auditoría</strong></td><td>✅ Ver todos los registros</td><td>❌ Sin acceso</td></tr>
+        <tr><td><strong>Configuración</strong></td><td>✅ Logo + Reinicio</td><td>❌ Sin acceso</td></tr>
+        <tr><td><strong>Mi perfil / Contraseña</strong></td><td>✅ Completo</td><td>✅ Completo</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <div class="callout-text">
+        <strong>Nota sobre los roles</strong>
+        Los módulos de Administración (Usuarios, Proveedores, Auditoría y Configuración) solo aparecen visibles en el menú lateral para usuarios con rol de <strong>Administrador</strong>. Los asistentes no verán estas opciones.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ACCESO ══ -->
+  <section class="section section-alt" id="acceso">
+    <div class="section-header">
+      <div class="section-icon icon-emerald">🔐</div>
+      <div>
+        <div class="section-title">Cómo acceder al sistema</div>
+        <div class="section-sub">Inicio de sesión y navegación</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Abre tu navegador web</strong>
+          <p>Usa Google Chrome, Firefox o Microsoft Edge. Escribe la dirección del sistema en la barra de navegación y presiona Enter.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Ingresa tus credenciales</strong>
+          <p>Escribe tu <strong>correo electrónico</strong> y <strong>contraseña</strong> en los campos correspondientes. Estas credenciales te las proporciona el administrador del sistema.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Haz clic en "Iniciar sesión"</strong>
+          <p>Si los datos son correctos, serás redirigido automáticamente al Dashboard principal.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Navega con el menú lateral</strong>
+          <p>Usa la barra de navegación del lado izquierdo para moverte entre los distintos módulos del sistema. En dispositivos móviles, el menú se abre con el botón de hamburguesa (☰) en la esquina superior izquierda.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 2</div>
+      <img src="capturas/captura2.JPEG" alt="Pantalla de inicio de sesión" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Pantalla de inicio de sesión</div>
+        <div class="screenshot-hint">Insertar captura de la pantalla de login</div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-text">
+        <strong>¿Olvidaste tu contraseña?</strong>
+        En la pantalla de inicio de sesión encontrarás el enlace <em>"¿Olvidaste tu contraseña?"</em>. Al hacer clic, podrás ingresar tu correo y recibirás un enlace de recuperación. Si no tienes acceso a tu correo, contacta al administrador del sistema.
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.5rem 0 .75rem;font-size:1rem;">Cerrar sesión</h3>
+    <p>Para cerrar sesión, haz clic en el ícono de salida (→) que aparece en la esquina inferior izquierda del menú, junto a tu nombre de usuario. Siempre cierra sesión cuando termines de usar el sistema, especialmente en computadoras compartidas.</p>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  DASHBOARD                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="dashboard">
+    <div class="section-header">
+      <div class="section-icon icon-rose">📊</div>
+      <div>
+        <div class="section-title">Dashboard</div>
+        <div class="section-sub">Panel de control general</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El Dashboard es la pantalla principal que aparece al iniciar sesión. Muestra un resumen en tiempo real del estado del consultorio, con estadísticas clave e indicadores de alerta.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 3</div>
+      <img src="capturas/captura3.JPEG" alt="Dashboard completo con estadísticas" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Dashboard completo con estadísticas</div>
+        <div class="screenshot-hint">Insertar captura del dashboard mostrando todas las tarjetas de estadísticas</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.5rem 0 .75rem;font-size:1rem;">Información mostrada</h3>
+
+    <table>
+      <thead><tr><th>Indicador</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Total de productos (SKUs)</strong></td><td>Número de productos diferentes registrados en el catálogo.</td></tr>
+        <tr><td><strong>Existencias en almacén</strong></td><td>Cantidad total de unidades disponibles en todos los lotes activos.</td></tr>
+        <tr><td><strong>Stock bajo</strong></td><td>Productos que están por debajo de su cantidad mínima configurada.</td></tr>
+        <tr><td><strong>Productos caducados</strong></td><td>Lotes con fecha de caducidad vencida que aún no han sido dados de baja.</td></tr>
+        <tr><td><strong>Ventas de hoy</strong></td><td>Número de ventas realizadas en el día actual e ingresos generados.</td></tr>
+        <tr><td><strong>Tratamientos del día</strong></td><td>Tratamientos aplicados hoy.</td></tr>
+        <tr><td><strong>Ventas del mes</strong></td><td>Total de ventas e ingresos acumulados en el mes en curso.</td></tr>
+        <tr><td><strong>Top productos usados</strong></td><td>Los 5 productos más utilizados en tratamientos en los últimos 30 días.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="color:var(--slate-700);margin:1.5rem 0 .75rem;font-size:1rem;">Accesos rápidos</h3>
+    <p>En el dashboard encontrarás botones de acceso rápido a las funciones más usadas:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0;">
+      <span class="chip">📦 Control de Lotes</span>
+      <span class="chip">💉 Aplicar Tratamiento</span>
+      <span class="chip">🛒 Punto de Venta</span>
+      <span class="chip">📋 Historial Clínico</span>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>Alertas críticas</strong>
+        Si hay productos con stock bajo o lotes caducados, aparecerá una sección de <em>alertas críticas</em> en el dashboard con los detalles de cada producto afectado. Atiende estas alertas con regularidad para evitar quedarte sin insumos.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PACIENTES                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="pacientes">
+    <div class="section-header">
+      <div class="section-icon icon-sky">👤</div>
+      <div>
+        <div class="section-title">Pacientes</div>
+        <div class="section-sub">Gestión de la base de datos de pacientes</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El módulo de <strong>Pacientes</strong> almacena la información de todos los clientes del consultorio y permite acceder a su historial de tratamientos. Se accede desde el menú lateral en <code>Clínica → Pacientes</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 4</div>
+      <img src="capturas/captura4.JPEG" alt="Lista de pacientes con búsqueda" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Lista de pacientes con búsqueda</div>
+        <div class="screenshot-hint">Insertar captura del listado de pacientes</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Registrar un nuevo paciente</h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nuevo Paciente"</strong>
+          <p>Botón rosa en la esquina superior derecha de la pantalla.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Completa el formulario</strong>
+          <p>Ingresa la información del paciente en los campos disponibles.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Haz clic en "Guardar"</strong>
+          <p>El paciente quedará registrado y aparecerá en el listado.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Campos del formulario</h3>
+    <div class="fields">
+      <div class="field"><div class="field-name">Nombre completo <span class="field-req">Requerido</span></div><div class="field-desc">Nombre y apellidos del paciente.</div></div>
+      <div class="field"><div class="field-name">Teléfono <span class="field-opt">Opcional</span></div><div class="field-desc">Número de contacto. Se usa para enviar mensajes de WhatsApp.</div></div>
+      <div class="field"><div class="field-name">Notas clínicas <span class="field-opt">Opcional</span></div><div class="field-desc">Alergias, condiciones especiales, observaciones importantes.</div></div>
+    </div>
+
+    <div class="screenshots-grid">
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 5</div>
+      <img src="capturas/captura5.JPEG" alt="Formulario de nuevo paciente" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Formulario de nuevo paciente</div>
+        <div class="screenshot-hint">Insertar captura del modal de creación</div>
+      </div>
+    </div>
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 6</div>
+      <img src="capturas/captura6.JPEG" alt="Ficha del paciente con historial" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Ficha del paciente con historial</div>
+        <div class="screenshot-hint">Insertar captura del historial de un paciente</div>
+      </div>
+    </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Otras acciones</h2>
+
+    <table>
+      <thead><tr><th>Acción</th><th>Cómo hacerlo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Buscar paciente</strong></td><td>Usa la barra de búsqueda en la parte superior. Puedes buscar por nombre o teléfono.</td></tr>
+        <tr><td><strong>Editar paciente</strong></td><td>Haz clic en el ícono de lápiz (✏️) en la fila del paciente.</td></tr>
+        <tr><td><strong>Ver historial clínico</strong></td><td>Haz clic en el ícono de historial (📋) para ver todos los tratamientos realizados al paciente con fechas y notas.</td></tr>
+        <tr><td><strong>Enviar WhatsApp</strong></td><td>Si el paciente tiene teléfono registrado, aparece un botón verde de WhatsApp que abre el chat directamente.</td></tr>
+        <tr><td><strong>Eliminar paciente</strong></td><td>Haz clic en el ícono de papelera (🗑️) y confirma la acción en el cuadro de diálogo.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  TRATAMIENTOS                              -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="tratamientos">
+    <div class="section-header">
+      <div class="section-icon icon-rose">💉</div>
+      <div>
+        <div class="section-title">Tratamientos</div>
+        <div class="section-sub">Protocolos de tratamientos y su aplicación</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Admin: crear y editar</span>
+      <span class="badge badge-asistente">🩺 Asistente: aplicar tratamientos</span>
+    </div>
+
+    <p>El módulo de <strong>Tratamientos</strong> gestiona los protocolos de los procedimientos estéticos del consultorio. Cada tratamiento tiene un costo, una descripción y una lista de los productos (insumos) que se consumen durante el procedimiento. Se accede desde <code>Clínica → Tratamientos</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 7</div>
+      <img src="capturas/captura7.JPEG" alt="Lista de tratamientos disponibles" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Lista de tratamientos disponibles</div>
+        <div class="screenshot-hint">Insertar captura del módulo de tratamientos</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Crear un protocolo de tratamiento <span style="font-size:11px;color:var(--violet);font-weight:700;background:#ede9fe;padding:.1rem .5rem;border-radius:999px;vertical-align:middle;">Solo Admin</span></h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nuevo Tratamiento"</strong>
+          <p>Botón en la parte superior derecha.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Ingresa la información básica</strong>
+          <p>Nombre del tratamiento, descripción y costo cobrado al paciente.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Agrega los insumos necesarios</strong>
+          <p>Selecciona cada producto del catálogo que se usa en este tratamiento e indica la cantidad que se consume por sesión.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Guarda el protocolo</strong>
+          <p>El tratamiento quedará disponible para ser aplicado.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>¿Para qué sirven los insumos en el protocolo?</strong>
+        Cuando se aplica un tratamiento, el sistema descuenta automáticamente del inventario la cantidad de cada insumo configurada en el protocolo. Esto mantiene el stock siempre actualizado sin necesidad de hacerlo manualmente.
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Aplicar un tratamiento a un paciente</h2>
+
+    <p>Esta acción registra que se realizó un procedimiento y descuenta los insumos del inventario automáticamente.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Aplicar Tratamiento"</strong>
+          <p>Botón disponible tanto en el módulo de Tratamientos como en el Dashboard.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Selecciona el tratamiento</strong>
+          <p>Elige el protocolo que se va a realizar de la lista de tratamientos activos.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Selecciona el paciente</strong>
+          <p>Busca y selecciona al paciente. Este campo es opcional si se trata de un paciente de paso.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Elige el asistente</strong>
+          <p>Indica quién realizará el procedimiento (para llevar control del trabajo de cada asistente).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Selecciona el lote para cada insumo</strong>
+          <p>Para cada producto requerido, elige de qué lote se tomará. El sistema sugiere el lote más próximo a caducar (método FEFO).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <strong>Agrega notas y confirma</strong>
+          <p>Opcional: escribe observaciones de la sesión. Luego haz clic en "Confirmar" para registrar el tratamiento y descontar el inventario.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 8</div>
+      <img src="capturas/captura8.JPEG" alt="Formulario para aplicar un tratamiento" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Formulario para aplicar un tratamiento</div>
+        <div class="screenshot-hint">Insertar captura del formulario de aplicación de tratamiento</div>
+      </div>
+    </div>
+
+    <div class="callout callout-success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text">
+        <strong>FEFO — Primero en caducar, primero en salir</strong>
+        El sistema aplica automáticamente el método FEFO al sugerir los lotes: siempre se usa primero el producto con fecha de caducidad más próxima para minimizar el desperdicio.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  HISTORIAL                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="historial">
+    <div class="section-header">
+      <div class="section-icon icon-emerald">📋</div>
+      <div>
+        <div class="section-title">Historial Clínico</div>
+        <div class="section-sub">Registro de todos los tratamientos realizados</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El módulo de <strong>Historial Clínico</strong> muestra un registro completo de todos los tratamientos realizados en el consultorio. Se puede filtrar por fecha, paciente, tratamiento o asistente. Se accede desde <code>Clínica → Historial</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 9</div>
+      <img src="capturas/captura9.JPEG" alt="Historial clínico con filtros" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Historial clínico con filtros</div>
+        <div class="screenshot-hint">Insertar captura del historial clínico</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Información disponible por cada registro</h3>
+    <ul>
+      <li>Fecha y hora del tratamiento</li>
+      <li>Nombre del paciente</li>
+      <li>Tratamiento realizado</li>
+      <li>Asistente que lo realizó</li>
+      <li>Costo aplicado</li>
+      <li>Notas de la sesión</li>
+      <li>Productos e insumos utilizados (con lote y cantidad)</li>
+    </ul>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  AGENDA                                    -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="agenda">
+    <div class="section-header">
+      <div class="section-icon icon-violet">📅</div>
+      <div>
+        <div class="section-title">Agenda</div>
+        <div class="section-sub">Calendario de citas y programación de tratamientos</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>La <strong>Agenda</strong> es un calendario mensual que permite programar citas para tratamientos en fechas y horas específicas. Desde aquí también se pueden cobrar los tratamientos directamente. Se accede desde el menú lateral en <code>Agenda</code>.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 10</div>
+      <img src="capturas/captura10.JPEG" alt="Vista de calendario mensual con citas programadas" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Vista de calendario mensual con citas programadas</div>
+        <div class="screenshot-hint">Insertar captura del calendario mostrando citas de colores</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Programar una nueva cita</h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nueva Cita"</strong>
+          <p>Botón rosa en la esquina superior derecha, o haz clic directamente sobre un día del calendario.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Selecciona el tratamiento</strong>
+          <p>Elige el procedimiento que se realizará en esta cita.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Selecciona paciente y asistente</strong>
+          <p>Estos campos son opcionales pero recomendados para llevar un registro completo.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Ingresa fecha y hora</strong>
+          <p>El sistema muestra correctamente la hora local. La cita quedará registrada con la hora exacta seleccionada.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Agrega notas (opcional)</strong>
+          <p>Indicaciones previas, preparación necesaria u observaciones generales.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <strong>Guarda la cita</strong>
+          <p>Aparecerá en el calendario del día correspondiente como un bloque de color.</p>
+        </div>
+      </li>
+    </ol>
+
+    <hr>
+    <h2 class="chapter">Ver citas del día</h2>
+
+    <p>Al hacer clic en cualquier día del calendario, se abre un panel lateral derecho mostrando todas las citas programadas para ese día, ordenadas por hora. Cada cita muestra:</p>
+    <ul>
+      <li>Hora de la cita</li>
+      <li>Nombre del tratamiento</li>
+      <li>Paciente asignado</li>
+      <li>Asistente responsable</li>
+      <li>Estado de la cita (Programada / Completada / Cancelada)</li>
+    </ul>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 11</div>
+      <img src="capturas/captura11.JPEG" alt="Panel lateral con citas del día seleccionado" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Panel lateral con citas del día seleccionado</div>
+        <div class="screenshot-hint">Insertar captura del panel de detalle del día</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Cobrar una cita</h2>
+
+    <p>Cuando llega el momento de cobrar el tratamiento de una cita, el sistema permite hacerlo directamente desde la agenda, con la opción de agregar productos adicionales.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Selecciona el día en el calendario</strong>
+          <p>Haz clic en el día que tiene la cita a cobrar.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Haz clic en "Cobrar" en la cita correspondiente</strong>
+          <p>Se abrirá el modal de cobro con el costo base del tratamiento ya cargado.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Agrega productos adicionales (opcional)</strong>
+          <p>Si se vendió algún producto extra durante la sesión, puedes agregarlo desde el buscador de productos.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Configura descuento e IVA si aplican</strong>
+          <p>Puedes aplicar un descuento en porcentaje o monto fijo. El IVA (16%) es opcional y se activa con un interruptor.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Selecciona el método de pago y confirma</strong>
+          <p>Elige entre Efectivo, Tarjeta, Transferencia u otro. Si es efectivo, puedes ingresar el monto recibido y el sistema calculará el cambio automáticamente.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout callout-success">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text">
+        <strong>Al cobrar una cita:</strong>
+        Se crea automáticamente una venta en el sistema, el inventario se descuenta con el método FEFO, y la cita cambia su estado a <em>Completada</em>.
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 12</div>
+      <img src="capturas/captura12.JPEG" alt="Modal de cobro de cita con productos adicionales" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Modal de cobro de cita con productos adicionales</div>
+        <div class="screenshot-hint">Insertar captura del modal de cobro</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Estados de una cita</h2>
+
+    <table>
+      <thead><tr><th>Estado</th><th>Color</th><th>Significado</th></tr></thead>
+      <tbody>
+        <tr><td><strong>PROGRAMADA</strong></td><td><span style="color:#7c3aed;font-weight:700;">● Violeta</span></td><td>Cita agendada, pendiente de realizarse.</td></tr>
+        <tr><td><strong>COMPLETADA</strong></td><td><span style="color:var(--emerald);font-weight:700;">● Verde</span></td><td>Tratamiento realizado y cobrado.</td></tr>
+        <tr><td><strong>CANCELADA</strong></td><td><span style="color:var(--slate-400);font-weight:700;">● Gris</span></td><td>Cita cancelada. No se cobra ni descuenta inventario.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PRODUCTOS                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="productos">
+    <div class="section-header">
+      <div class="section-icon icon-amber">📦</div>
+      <div>
+        <div class="section-title">Productos</div>
+        <div class="section-sub">Catálogo de productos e insumos del consultorio</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Admin: crear, editar, importar</span>
+      <span class="badge badge-asistente">🩺 Asistente: consultar</span>
+    </div>
+
+    <p>El módulo de <strong>Productos</strong> es el catálogo maestro de todos los insumos y productos que maneja el consultorio, tanto para uso en tratamientos como para venta al público. Se accede desde <code>Inventario → Productos</code>.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 13</div>
+      <img src="capturas/captura13.JPEG" alt="Catálogo de productos con filtros y estadísticas" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Catálogo de productos con filtros y estadísticas</div>
+        <div class="screenshot-hint">Insertar captura del módulo de productos</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Agregar un producto nuevo <span style="font-size:11px;color:var(--violet);font-weight:700;background:#ede9fe;padding:.1rem .5rem;border-radius:999px;vertical-align:middle;">Solo Admin</span></h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nuevo Producto"</strong>
+          <p>Botón rosa en la esquina superior derecha.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Completa la información del producto</strong>
+          <p>Nombre, tipo, marca, presentación y proveedor.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Ingresa el precio de compra</strong>
+          <p>El costo al que se adquiere el producto al proveedor.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Activa "Disponible en POS" si se vende al público</strong>
+          <p>Al activar esta opción, deberás ingresar también el precio de venta. El producto aparecerá disponible en el Punto de Venta.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Guarda el producto</strong>
+          <p>Quedará registrado en el catálogo listo para asignarse a tratamientos y lotes.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Campos del formulario</h3>
+    <div class="fields">
+      <div class="field"><div class="field-name">Nombre <span class="field-req">Requerido</span></div><div class="field-desc">Nombre comercial del producto. Ej: Toxina Botulínica.</div></div>
+      <div class="field"><div class="field-name">Tipo <span class="field-req">Requerido</span></div><div class="field-desc">Categoría del producto. Ej: Toxina, Relleno, Anestésico.</div></div>
+      <div class="field"><div class="field-name">Marca <span class="field-opt">Opcional</span></div><div class="field-desc">Marca o laboratorio fabricante. Ej: Allergan, Juvederm.</div></div>
+      <div class="field"><div class="field-name">Presentación <span class="field-opt">Opcional</span></div><div class="field-desc">Contenido, dosis o concentración. Ej: 100 UI, 1 ml.</div></div>
+      <div class="field"><div class="field-name">Proveedor <span class="field-opt">Opcional</span></div><div class="field-desc">Proveedor de quien se adquiere el producto.</div></div>
+      <div class="field"><div class="field-name">Precio de compra <span class="field-opt">Opcional</span></div><div class="field-desc">Costo de adquisición (referencia interna).</div></div>
+      <div class="field"><div class="field-name">Precio de venta <span class="field-opt">Si aplica</span></div><div class="field-desc">Precio al público. Solo si el producto se vende en POS.</div></div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Importar productos desde Excel <span style="font-size:11px;color:var(--violet);font-weight:700;background:#ede9fe;padding:.1rem .5rem;border-radius:999px;vertical-align:middle;">Solo Admin</span></h2>
+
+    <p>Para agregar muchos productos a la vez sin capturarlos uno a uno, puedes usar la importación masiva desde un archivo Excel.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Importar Excel"</strong>
+          <p>Botón en la barra de acciones superior.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Descarga la plantilla (recomendado)</strong>
+          <p>Haz clic en "Descargar plantilla" para obtener un archivo Excel con las columnas correctas y ejemplos incluidos.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Llena el archivo Excel</strong>
+          <p>Completa la información de cada producto en las filas del archivo. Las columnas mínimas requeridas son <code>nombre</code> y <code>tipo</code>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Sube el archivo</strong>
+          <p>Arrastra el archivo al área indicada o haz clic para seleccionarlo. El sistema mostrará una vista previa con el estado de validación de cada fila.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Revisa la vista previa y confirma la importación</strong>
+          <p>Las filas en verde son válidas y se importarán. Las filas en rojo tienen errores y se omitirán. Si un proveedor no existe, se crea automáticamente.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">📋</span>
+      <div class="callout-text">
+        <strong>Columnas del archivo Excel</strong>
+        <code>nombre</code> (requerido) · <code>tipo</code> (requerido) · <code>marca</code> · <code>presentacion</code> · <code>proveedor</code> · <code>precio_compra</code> · <code>precio_venta</code><br>
+        Si incluyes <code>precio_venta</code>, el producto se marcará automáticamente como disponible en POS.
+      </div>
+    </div>
+
+    <div class="screenshots-grid">
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 14</div>
+      <img src="capturas/captura14.JPEG" alt="Modal de importación con zona de carga" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Modal de importación con zona de carga</div>
+        <div class="screenshot-hint">Insertar captura del modal de importación Excel</div>
+      </div>
+    </div>
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 15</div>
+      <img src="capturas/captura15.JPEG" alt="Vista previa de filas con estado de validación" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Vista previa de filas con estado de validación</div>
+        <div class="screenshot-hint">Insertar captura de la tabla de preview</div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  LOTES                                     -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="lotes">
+    <div class="section-header">
+      <div class="section-icon icon-amber">🗂️</div>
+      <div>
+        <div class="section-title">Lotes de Inventario</div>
+        <div class="section-sub">Control de existencias, fechas de caducidad y movimientos</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El módulo de <strong>Lotes</strong> controla el inventario real del consultorio. Cada vez que se compran productos, se registran como un lote con su número de lote, fecha de caducidad y cantidad recibida. Se accede desde <code>Inventario → Lotes</code>.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 16</div>
+      <img src="capturas/captura16.JPEG" alt="Vista de lotes activos con filtros" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Vista de lotes activos con filtros</div>
+        <div class="screenshot-hint">Insertar captura del módulo de lotes</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Registrar un nuevo lote</h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nuevo Lote"</strong>
+          <p>Botón en la parte superior de la pantalla.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Selecciona el producto</strong>
+          <p>Elige el producto del catálogo al que pertenece este lote.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Ingresa la información del lote</strong>
+          <p>Número de lote (aparece en el empaque), fecha de caducidad, cantidad recibida, ubicación física y cantidad mínima de alerta.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Guarda el lote</strong>
+          <p>El inventario se actualizará automáticamente con la cantidad ingresada.</p>
+        </div>
+      </li>
+    </ol>
+
+    <hr>
+    <h2 class="chapter">Vistas disponibles</h2>
+
+    <table>
+      <thead><tr><th>Vista</th><th>Qué muestra</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Por Lote</strong></td><td>Lista individual de cada lote con producto, número de lote, caducidad, cantidad actual y ubicación.</td></tr>
+        <tr><td><strong>Caducados</strong></td><td>Lotes con fecha de caducidad vencida. Desde aquí se pueden dar de baja los lotes expirados.</td></tr>
+        <tr><td><strong>Por Producto</strong></td><td>Vista consolidada que agrupa todos los lotes por producto, mostrando el stock total de cada uno.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="screenshots-grid">
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 17</div>
+      <img src="capturas/captura17.JPEG" alt="Pestaña "Caducados" con opción de dar de baja" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Pestaña "Caducados" con opción de dar de baja</div>
+        <div class="screenshot-hint">Insertar captura de la vista de lotes caducados</div>
+      </div>
+    </div>
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 18</div>
+      <img src="capturas/captura18.JPEG" alt="Vista consolidada por producto" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Vista consolidada por producto</div>
+        <div class="screenshot-hint">Insertar captura de la vista consolidada</div>
+      </div>
+    </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Registrar movimientos de inventario</h2>
+
+    <p>Puedes registrar manualmente entradas, salidas, ajustes y mermas de inventario. Esto es útil para corregir cantidades o registrar pérdidas.</p>
+
+    <table>
+      <thead><tr><th>Tipo de movimiento</th><th>Cuándo usarlo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>ENTRADA</strong></td><td>Recibiste más productos del mismo lote (reabastecimiento).</td></tr>
+        <tr><td><strong>SALIDA</strong></td><td>Descuento manual de stock (pérdida, robo, uso no registrado).</td></tr>
+        <tr><td><strong>AJUSTE</strong></td><td>Corrección del inventario físico vs el sistema.</td></tr>
+        <tr><td><strong>MERMA</strong></td><td>Producto dañado, derramado o inutilizable.</td></tr>
+        <tr><td><strong>CADUCADO</strong></td><td>Baja por vencimiento del lote.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-text">
+        <strong>Dar de baja lotes caducados</strong>
+        Los lotes caducados se ocultan automáticamente de la vista principal, pero siguen existiendo en el sistema. Ve a la pestaña <em>"Caducados"</em> y usa el botón <em>"Dar de baja"</em> para registrar formalmente la baja del lote expirado.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  ALERTAS                                   -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="alertas">
+    <div class="section-header">
+      <div class="section-icon icon-rose">🔔</div>
+      <div>
+        <div class="section-title">Alertas de Inventario</div>
+        <div class="section-sub">Monitoreo de stock bajo y próximos a caducar</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El módulo de <strong>Alertas</strong> muestra de forma centralizada todos los productos que requieren atención inmediata, ya sea por stock bajo o por fecha de caducidad próxima. Se accede desde <code>Inventario → Alertas</code>.</p>
+
+    <p>Las alertas se dividen en dos categorías:</p>
+    <ul>
+      <li><strong>Stock bajo:</strong> Productos cuya cantidad actual está por debajo del mínimo configurado en el lote.</li>
+      <li><strong>Próximos a caducar:</strong> Lotes que vencen en los próximos 90 días (configurable).</li>
+    </ul>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 19</div>
+      <img src="capturas/captura19.JPEG" alt="Panel de alertas de inventario" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Panel de alertas de inventario</div>
+        <div class="screenshot-hint">Insertar captura del módulo de alertas</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PUNTO DE VENTA                            -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="pos">
+    <div class="section-header">
+      <div class="section-icon icon-emerald">🛒</div>
+      <div>
+        <div class="section-title">Punto de Venta (POS)</div>
+        <div class="section-sub">Registro de ventas de productos al público</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>El <strong>Punto de Venta</strong> permite registrar ventas de productos al público de forma rápida. Se accede desde el menú lateral con el ícono de carrito de compras o desde el acceso rápido del Dashboard.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 20</div>
+      <img src="capturas/captura20.JPEG" alt="Pantalla del Punto de Venta con carrito" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Pantalla del Punto de Venta con carrito</div>
+        <div class="screenshot-hint">Insertar captura del POS con productos en el carrito</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Realizar una venta</h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Busca y agrega productos al carrito</strong>
+          <p>Usa el buscador de la parte izquierda para encontrar los productos. Haz clic en el botón (+) para agregarlos al carrito. Puedes ajustar la cantidad directamente en el carrito.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Asocia un cliente (opcional)</strong>
+          <p>Puedes buscar y seleccionar un paciente registrado, o dejar la venta sin cliente específico.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Revisa el resumen de totales</strong>
+          <p>Verifica el subtotal. Si aplica IVA, activa el interruptor correspondiente (IVA = 16%). Puedes también aplicar un descuento.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Selecciona el método de pago</strong>
+          <p>Elige entre: <strong>Efectivo</strong>, <strong>Tarjeta</strong>, <strong>Transferencia</strong> u <strong>Otro</strong>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Ingresa el monto recibido (si es efectivo)</strong>
+          <p>Al seleccionar pago en efectivo, aparece un campo para ingresar el dinero que te da el cliente. El sistema calculará automáticamente el <strong>cambio a entregar</strong> (si sobra) o el <strong>falta por pagar</strong> (si no es suficiente).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-content">
+          <strong>Haz clic en "Cobrar"</strong>
+          <p>La venta queda registrada, el inventario se descuenta automáticamente y el carrito se limpia para la siguiente venta.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="screenshots-grid">
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 21</div>
+      <img src="capturas/captura21.JPEG" alt="Sección de totales con IVA activado" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Sección de totales con IVA activado</div>
+        <div class="screenshot-hint">Insertar captura de la sección de totales del POS</div>
+      </div>
+    </div>
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 22</div>
+      <img src="capturas/captura22.JPEG" alt="Calculadora de cambio en pago en efectivo" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Calculadora de cambio en pago en efectivo</div>
+        <div class="screenshot-hint">Insertar captura del campo de monto recibido y cambio</div>
+      </div>
+    </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>IVA opcional</strong>
+        El IVA está desactivado por defecto. Solo actívalo cuando el cliente solicite factura o cuando la operación lo requiera. La tasa de IVA es del <strong>16%</strong>.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  VENTAS                                    -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="ventas">
+    <div class="section-header">
+      <div class="section-icon icon-emerald">📈</div>
+      <div>
+        <div class="section-title">Historial de Ventas</div>
+        <div class="section-sub">Consulta y gestión de todas las ventas registradas</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Admin: ver y anular ventas</span>
+      <span class="badge badge-asistente">🩺 Asistente: solo ver</span>
+    </div>
+
+    <p>El módulo de <strong>Ventas</strong> muestra el historial completo de todas las transacciones realizadas, tanto desde el POS como desde la Agenda. Se accede desde el menú lateral en <code>POS → Ventas</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 23</div>
+      <img src="capturas/captura23.JPEG" alt="Listado de ventas con filtros por fecha y método de pago" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Listado de ventas con filtros por fecha y método de pago</div>
+        <div class="screenshot-hint">Insertar captura del historial de ventas</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Filtros disponibles</h3>
+    <ul>
+      <li>Rango de fechas (inicio y fin)</li>
+      <li>Método de pago (Efectivo, Tarjeta, Transferencia, etc.)</li>
+      <li>Estado (Activas / Anuladas)</li>
+    </ul>
+
+    <hr>
+    <h2 class="chapter">Anular una venta <span style="font-size:11px;color:var(--violet);font-weight:700;background:#ede9fe;padding:.1rem .5rem;border-radius:999px;vertical-align:middle;">Solo Admin</span></h2>
+
+    <p>Si una venta fue registrada por error, el administrador puede anularla ingresando el motivo. Una venta anulada no se elimina del sistema, queda marcada como anulada con el motivo registrado para fines de auditoría.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Localiza la venta en el listado</strong>
+          <p>Usa los filtros de fecha para encontrar la venta que necesitas anular.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Haz clic en "Ver detalle"</strong>
+          <p>Se abrirá el panel con todos los productos de la venta, totales y datos del cliente.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Haz clic en "Anular venta"</strong>
+          <p>Aparecerá un cuadro donde debes escribir el motivo de la anulación (mínimo 3 caracteres).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Confirma la anulación</strong>
+          <p>La venta quedará marcada como anulada. Esta acción queda registrada en la Auditoría.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  USUARIOS (ADMIN)                          -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="usuarios">
+    <div class="section-header">
+      <div class="section-icon icon-violet">👑</div>
+      <div>
+        <div class="section-title">Gestión de Usuarios</div>
+        <div class="section-sub">Control de acceso y roles del personal</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Exclusivo para Administradores</span>
+    </div>
+
+    <p>El módulo de <strong>Usuarios</strong> permite al administrador crear y gestionar las cuentas del personal que tendrá acceso al sistema. Se accede desde <code>Administración → Usuarios</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 24</div>
+      <img src="capturas/captura24.JPEG" alt="Lista de usuarios del sistema" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Lista de usuarios del sistema</div>
+        <div class="screenshot-hint">Insertar captura del módulo de usuarios</div>
+      </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Crear un nuevo usuario</h2>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Haz clic en "Nuevo Usuario"</strong>
+          <p>Botón en la parte superior derecha del módulo.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Completa los datos del usuario</strong>
+          <p>Nombre completo, correo electrónico (será su usuario de acceso) y contraseña inicial.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Asigna el rol</strong>
+          <p>Selecciona <strong>Administrador</strong> (acceso total) o <strong>Asistente</strong> (acceso limitado).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Guarda el usuario</strong>
+          <p>Comparte las credenciales con el nuevo integrante del personal. Se recomienda pedirle que cambie su contraseña en el primer acceso.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Acciones disponibles</h3>
+    <table>
+      <thead><tr><th>Acción</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Editar usuario</strong></td><td>Modifica el nombre, rol o cambia la contraseña. El email no es editable una vez creado.</td></tr>
+        <tr><td><strong>Desactivar usuario</strong></td><td>El usuario no podrá iniciar sesión, pero sus registros históricos se conservan.</td></tr>
+        <tr><td><strong>Reactivar usuario</strong></td><td>Restaura el acceso a un usuario previamente desactivado.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout callout-danger">
+      <span class="callout-icon">🔴</span>
+      <div class="callout-text">
+        <strong>Importante</strong>
+        No elimines usuarios, en su lugar desactívalos. Eliminar un usuario podría afectar el historial de ventas y tratamientos asociados a esa cuenta.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PROVEEDORES (ADMIN)                       -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="proveedores">
+    <div class="section-header">
+      <div class="section-icon icon-violet">🏢</div>
+      <div>
+        <div class="section-title">Proveedores</div>
+        <div class="section-sub">Directorio de proveedores de productos e insumos</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Exclusivo para Administradores</span>
+    </div>
+
+    <p>El módulo de <strong>Proveedores</strong> mantiene un directorio de todos los proveedores de los que se adquieren productos. Se accede desde <code>Administración → Proveedores</code>.</p>
+
+    <div class="screenshot">
+      <div class="screenshot-tag">Captura 25</div>
+      <img src="capturas/captura25.JPEG" alt="Directorio de proveedores en tarjetas" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Directorio de proveedores en tarjetas</div>
+        <div class="screenshot-hint">Insertar captura del módulo de proveedores</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Campos de un proveedor</h3>
+    <div class="fields">
+      <div class="field"><div class="field-name">Nombre <span class="field-req">Requerido</span></div><div class="field-desc">Nombre de la empresa o persona proveedora.</div></div>
+      <div class="field"><div class="field-name">Teléfono <span class="field-opt">Opcional</span></div><div class="field-desc">Número de contacto. Permite llamar directamente desde el sistema.</div></div>
+      <div class="field"><div class="field-name">Email <span class="field-opt">Opcional</span></div><div class="field-desc">Correo de contacto. Permite abrir el cliente de correo directamente.</div></div>
+      <div class="field"><div class="field-name">Notas <span class="field-opt">Opcional</span></div><div class="field-desc">Dirección, condiciones de pago, horarios de atención, etc.</div></div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">
+        <strong>Creación automática de proveedores</strong>
+        Al importar productos desde Excel, si se incluye el nombre de un proveedor que no existe en el sistema, se crea automáticamente. Luego puedes completar su información (teléfono, email, notas) desde este módulo.
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  AUDITORÍA (ADMIN)                         -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="auditoria">
+    <div class="section-header">
+      <div class="section-icon icon-violet">🔍</div>
+      <div>
+        <div class="section-title">Auditoría</div>
+        <div class="section-sub">Registro completo de todas las acciones del sistema</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Exclusivo para Administradores</span>
+    </div>
+
+    <p>El módulo de <strong>Auditoría</strong> registra automáticamente todas y cada una de las acciones realizadas en el sistema: quién hizo qué, cuándo y con qué resultado. Es esencial para el control interno y la trazabilidad. Se accede desde <code>Administración → Auditoría</code>.</p>
+
+    <div class="screenshot screenshot-lg">
+      <div class="screenshot-tag">Captura 26</div>
+      <img src="capturas/captura26.JPEG" alt="Log de auditoría con filtros avanzados" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Log de auditoría con filtros avanzados</div>
+        <div class="screenshot-hint">Insertar captura del módulo de auditoría</div>
+      </div>
+    </div>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Información registrada en cada log</h3>
+    <table>
+      <thead><tr><th>Campo</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Fecha y hora</strong></td><td>Momento exacto en que ocurrió la acción.</td></tr>
+        <tr><td><strong>Usuario</strong></td><td>Quién realizó la acción.</td></tr>
+        <tr><td><strong>Tipo de acción</strong></td><td>CREAR, ACTUALIZAR, ELIMINAR, LOGIN, REALIZAR_VENTA, etc.</td></tr>
+        <tr><td><strong>Módulo</strong></td><td>En qué parte del sistema ocurrió (Productos, Ventas, Usuarios, etc.).</td></tr>
+        <tr><td><strong>Descripción</strong></td><td>Detalle de qué se modificó.</td></tr>
+        <tr><td><strong>Estado</strong></td><td>Si la acción fue EXITOSA o resultó en ERROR.</td></tr>
+        <tr><td><strong>IP y Dispositivo</strong></td><td>Dirección IP y navegador desde donde se hizo la acción.</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="color:var(--slate-700);margin:1.25rem 0 .75rem;font-size:.95rem;">Filtros disponibles</h3>
+    <ul>
+      <li>Rango de fechas (hoy, esta semana, este mes, rango personalizado)</li>
+      <li>Módulo del sistema</li>
+      <li>Tipo de acción</li>
+      <li>Usuario específico</li>
+      <li>Estado (Exitoso / Error)</li>
+    </ul>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  CONFIGURACIÓN (ADMIN)                     -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="configuracion">
+    <div class="section-header">
+      <div class="section-icon icon-violet">⚙️</div>
+      <div>
+        <div class="section-title">Configuración del Sistema</div>
+        <div class="section-sub">Personalización y opciones avanzadas</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-admin">👑 Exclusivo para Administradores</span>
+    </div>
+
+    <p>El módulo de <strong>Configuración</strong> permite personalizar el sistema y ejecutar operaciones administrativas avanzadas. Se accede desde <code>Administración → Configuración</code>.</p>
+
+    <hr>
+    <h2 class="chapter">Cambiar el logotipo del consultorio</h2>
+
+    <p>Puedes reemplazar el logo que aparece en la barra lateral del sistema con el logo de tu consultorio.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Ve a Administración → Configuración</strong>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>En la sección "Logotipo del consultorio", arrastra tu imagen</strong>
+          <p>O haz clic en el área punteada para seleccionar el archivo desde tu computadora. Formatos aceptados: PNG, JPG, SVG, WEBP. Tamaño máximo: 2 MB.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Verifica la vista previa</strong>
+          <p>El logo se mostrará en la previsualización antes de guardarse.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Haz clic en "Guardar logo"</strong>
+          <p>El logo se actualizará inmediatamente en la barra lateral de todos los usuarios sin necesidad de recargar la página.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="screenshots-grid">
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 27</div>
+      <img src="capturas/captura27.JPEG" alt="Sección de carga de logotipo" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Sección de carga de logotipo</div>
+        <div class="screenshot-hint">Insertar captura de la sección de logo en configuración</div>
+      </div>
+    </div>
+      <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 28</div>
+      <img src="capturas/captura28.JPEG" alt="Sidebar con logo personalizado aplicado" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Sidebar con logo personalizado aplicado</div>
+        <div class="screenshot-hint">Insertar captura del menú lateral con el nuevo logo</div>
+      </div>
+    </div>
+    </div>
+
+    <hr>
+    <h2 class="chapter">Reiniciar el sistema</h2>
+
+    <div class="callout callout-danger">
+      <span class="callout-icon">🔴</span>
+      <div class="callout-text">
+        <strong>¡Atención! Esta acción es IRREVERSIBLE</strong>
+        Al reiniciar el sistema se borrarán permanentemente TODOS los datos: pacientes, tratamientos, inventario, ventas, citas, y otros usuarios. Solo se conservará tu cuenta de administrador y el logo personalizado. Úsalo únicamente para configurar el sistema desde cero antes de comenzar a usarlo en producción.
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>En la sección "Zona de peligro", haz clic en "Reiniciar sistema"</strong>
+          <p>Aparecerá una advertencia detallada de todo lo que se eliminará.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Lee cuidadosamente la advertencia</strong>
+          <p>Asegúrate de entender que esta acción no se puede deshacer.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Escribe la palabra REINICIAR en el campo de confirmación</strong>
+          <p>El botón de confirmación solo se activará cuando escribas exactamente esa palabra.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Haz clic en "Confirmar reinicio"</strong>
+          <p>El sistema se reiniciará, se cerrrará tu sesión automáticamente y podrás volver a configurar todo desde el inicio.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  MI PERFIL                                 -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" id="perfil">
+    <div class="section-header">
+      <div class="section-icon icon-slate">👤</div>
+      <div>
+        <div class="section-title">Mi Perfil</div>
+        <div class="section-sub">Actualización de datos personales</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>Desde <strong>Mi Perfil</strong> puedes actualizar tu nombre y ver los datos de tu cuenta. Se accede desde el menú lateral en <code>Mi cuenta → Mi Perfil</code> o haciendo clic en tu avatar en la barra superior.</p>
+
+    <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 29</div>
+      <img src="capturas/captura29.JPEG" alt="Pantalla de Mi Perfil" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Pantalla de Mi Perfil</div>
+        <div class="screenshot-hint">Insertar captura de la pantalla de perfil de usuario</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  CAMBIAR CONTRASEÑA                        -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section section-alt" id="password">
+    <div class="section-header">
+      <div class="section-icon icon-slate">🔑</div>
+      <div>
+        <div class="section-title">Cambiar Contraseña</div>
+        <div class="section-sub">Actualización de credenciales de acceso</div>
+      </div>
+    </div>
+
+    <div class="role-badges">
+      <span class="badge badge-todos">👥 Todos los usuarios</span>
+    </div>
+
+    <p>Puedes cambiar tu contraseña en cualquier momento desde <code>Mi cuenta → Cambiar contraseña</code>.</p>
+
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Ingresa tu contraseña actual</strong>
+          <p>Para verificar que eres tú quien hace el cambio.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Ingresa la nueva contraseña</strong>
+          <p>Mínimo 6 caracteres. Se recomienda usar letras, números y símbolos para mayor seguridad.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Confirma la nueva contraseña</strong>
+          <p>Escríbela nuevamente para evitar errores.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Haz clic en "Cambiar contraseña"</strong>
+          <p>La nueva contraseña se aplicará inmediatamente.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-text">
+        <strong>Recomendación de seguridad</strong>
+        Cambia tu contraseña regularmente y no la compartas con nadie. Si sospechas que alguien más conoce tu contraseña, cámbiala de inmediato y notifica al administrador.
+      </div>
+    </div>
+
+    <div class="screenshot screenshot-sm">
+      <div class="screenshot-tag">Captura 30</div>
+      <img src="capturas/captura30.JPEG" alt="Formulario de cambio de contraseña" class="sc-img"
+           onload="this.nextElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+      <div class="sc-ph">
+        <div class="screenshot-icon">🖼️</div>
+        <div class="screenshot-label">Formulario de cambio de contraseña</div>
+        <div class="screenshot-hint">Insertar captura de la pantalla de cambio de contraseña</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════ -->
+  <!--  PIE DE PÁGINA                             -->
+  <!-- ══════════════════════════════════════════ -->
+
+  <section class="section" style="background:linear-gradient(135deg,var(--slate-800),var(--slate-900));color:white;border:none;">
+    <div style="max-width:600px;margin:0 auto;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:1rem;">📋</div>
+      <h2 style="font-size:1.4rem;font-weight:900;color:white;margin-bottom:.75rem;">Manual de Usuario</h2>
+      <p style="color:rgba(255,255,255,.6);font-size:14px;margin-bottom:1.5rem;">Sistema de Gestión de Consultorio de Medicina Estética</p>
+      <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:1.5rem;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:900;color:var(--rose-400);">30</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;">Capturas</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:900;color:var(--rose-400);">13</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;">Módulos</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:900;color:var(--rose-400);">2</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;">Roles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Resaltar sección activa en el sidebar al hacer scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links    = document.querySelectorAll('.toc a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.toc a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
